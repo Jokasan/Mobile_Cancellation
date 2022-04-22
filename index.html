@@ -132,7 +132,10 @@
 </div>
 <p>The data in question is concerned with consumer behaviour around their mobile plan, we are particularly interested in being able to predict mobile plan cancellation. Lets get a quick overview of the data:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-4_85e4b9786faa992056358d12c740151a">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(mobile_carrier_data) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-stdout">
 <pre><code>Rows: 2,277
 Columns: 14
@@ -151,13 +154,18 @@ $ total_intl_minutes            &lt;dbl&gt; 9.0, 12.3, 9.2, 10.0, 10.2, 8.7, 8.7
 $ total_intl_calls              &lt;int&gt; 2, 1, 5, 3, 7, 3, 3, 3, 3, 4, 3, 4, 3, 9…
 $ number_customer_service_calls &lt;int&gt; 3, 1, 2, 0, 0, 0, 0, 6, 2, 2, 2, 4, 0, 1…</code></pre>
 </div>
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># skimr::skim(mobile_carrier_data)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 </section>
 <section id="exploratory-data-analysis" class="level1">
 <h1>Exploratory Data Analysis</h1>
 <p>It would be interesting to see how the total day calls variable is distributed and whether this differs by region:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-6_8477da23315b4051b7d000264c947fe0">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggridges)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>mobile_carrier_data <span class="sc">|&gt;</span> </span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(total_day_calls, us_state_region,</span>
@@ -170,12 +178,15 @@ $ number_customer_service_calls &lt;int&gt; 3, 1, 2, 0, 0, 0, 0, 6, 2, 2, 2, 4, 
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Spectral"</span>)<span class="sc">+</span></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_ridges</span>()<span class="sc">+</span></span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="1440"></p>
 </div>
 </div>
 <p>Multicollinearity can be explored by creating a correlation matrix between the numeric variables:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-8_2aba5a0a9d99412bf2e18eab1309a960">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>corm <span class="ot">&lt;-</span> </span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  mobile_carrier_data <span class="sc">|&gt;</span> </span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select_if</span>(is.numeric) <span class="sc">|&gt;</span> </span>
@@ -219,6 +230,7 @@ $ number_customer_service_calls &lt;int&gt; 3, 1, 2, 0, 0, 0, 0, 6, 2, 2, 2, 4, 
 <span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>,</span>
 <span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">vjust=</span><span class="dv">1</span>,</span>
 <span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">hjust=</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="1440"></p>
 </div>
@@ -229,11 +241,14 @@ $ number_customer_service_calls &lt;int&gt; 3, 1, 2, 0, 0, 0, 0, 6, 2, 2, 2, 4, 
 <h1>Model Building</h1>
 <p>This data contains information on whether a member cancelled their service. Lets quickly take a look at the proportion of the cancellations:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-10_e271db0a83fd1212f3e219584b42849c">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>mobile_carrier_data <span class="sc">|&gt;</span> </span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(canceled_plan) <span class="sc">|&gt;</span> </span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(canceled_plan) <span class="sc">|&gt;</span> </span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tally</span>() <span class="sc">|&gt;</span> </span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">perc=</span><span class="fu">round</span>((n<span class="sc">/</span><span class="fu">sum</span>(n)<span class="sc">*</span><span class="dv">100</span>),<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-stdout">
 <pre><code># A tibble: 2 × 3
   canceled_plan     n  perc
@@ -247,6 +262,8 @@ $ number_customer_service_calls &lt;int&gt; 3, 1, 2, 0, 0, 0, 0, 6, 2, 2, 2, 4, 
 <h2 class="anchored" data-anchor-id="logistic-regression">Logistic regression</h2>
 <p>First step prior to any modeling will be to create the training and testing splits:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-12_99446f9322acebd79f52af260b25dab9">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>canceled_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(mobile_carrier_data,</span>
@@ -263,22 +280,29 @@ $ number_customer_service_calls &lt;int&gt; 3, 1, 2, 0, 0, 0, 0, 6, 2, 2, 2, 4, 
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>canceled_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(canceled_training)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <section id="feature-engineering" class="level3">
 <h3 class="anchored" data-anchor-id="feature-engineering">Feature engineering:</h3>
 <p>The following transformations to the data are undertaken. First the skewness from the numeric predictors is removed with <code>step_YeoJohnson()</code></p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-14_b80e2c2e32fbdea7cde3365fdc8be7bd">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>canceled_recipe <span class="ot">&lt;-</span> </span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">recipe</span>(canceled_plan<span class="sc">~</span>., <span class="at">data=</span>mobile_carrier_data) <span class="sc">|&gt;</span> </span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_YeoJohnson</span>(<span class="fu">all_numeric</span>(), <span class="sc">-</span><span class="fu">all_outcomes</span>()) <span class="sc">|&gt;</span> </span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_numeric</span>(), <span class="sc">-</span><span class="fu">all_outcomes</span>()) <span class="sc">|&gt;</span> </span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_dummy</span>(<span class="fu">all_nominal</span>(), <span class="sc">-</span><span class="fu">all_outcomes</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>The transformation of the data can be checked, by prepping and baking the data:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-16_8afe036c363ef214bf4c65d1f1674cf0">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>canceled_recipe <span class="sc">|&gt;</span> </span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">|&gt;</span> </span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bake</span>(<span class="at">new_data=</span><span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-stdout">
 <pre><code># A tibble: 2,277 × 21
    number_vmail_messages total_day_minutes total_day_calls total_eve_minutes
@@ -309,22 +333,31 @@ $ number_customer_service_calls &lt;int&gt; 3, 1, 2, 0, 0, 0, 0, 6, 2, 2, 2, 4, 
 <h2 class="anchored" data-anchor-id="specifying-the-logistic-regression-model">Specifying the Logistic Regression Model</h2>
 <p>The logistic regression model is specified below:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-18_bbe8bc0649332c03182c17b157640966">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>logistic_model <span class="ot">&lt;-</span> <span class="fu">logistic_reg</span>() <span class="sc">|&gt;</span> </span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"glm"</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 </section>
 <section id="creating-the-workflow" class="level2">
 <h2 class="anchored" data-anchor-id="creating-the-workflow">Creating the workflow</h2>
 <p>Next we put our recipe and model specification together to create a workflow:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-20_ada7f624b329538ce35a6987fec8e845">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>logistic_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span> </span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(logistic_model) <span class="sc">|&gt;</span> </span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(canceled_recipe) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>The workflow can be inspected by calling it:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-22_6e2c940526637fd63fc7989b38cc85e2">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>logistic_wf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-stdout">
 <pre><code>══ Workflow ════════════════════════════════════════════════════════════════════
 Preprocessor: Recipe
@@ -345,6 +378,8 @@ Computational engine: glm </code></pre>
 </div>
 <p>Lets fit the model to the cross validation folds:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-24_b0c1edd89c8ca461b37e6b83a4dc9730">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>logistic_cv_results <span class="ot">&lt;-</span> <span class="fu">fit_resamples</span>(</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  logistic_wf,</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  canceled_folds,</span>
@@ -357,6 +392,7 @@ Computational engine: glm </code></pre>
 <span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Collect the specified metrics:</span></span>
 <span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>logistic_cv_results <span class="sc">|&gt;</span> </span>
 <span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_metrics</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-stdout">
 <pre><code># A tibble: 8 × 6
   .metric   .estimator  mean     n std_err .config             
@@ -373,25 +409,34 @@ Computational engine: glm </code></pre>
 </div>
 <p>Finally we can fit the model to our training and the test the model using <code>last_fit()</code>:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-26_91965f05d9aff84969525eca63acfb15">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>logistic_fit <span class="ot">&lt;-</span> logistic_wf <span class="sc">|&gt;</span> </span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">last_fit</span>(canceled_split)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>Next we can create an ROC curve by collecting the predictions from our last fit:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-28_81904d6d90e9f40bf6b254a719e631ed">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>logistic_fit <span class="sc">|&gt;</span> </span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_predictions</span>() <span class="sc">|&gt;</span> </span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">roc_curve</span>(canceled_plan,.pred_yes) <span class="sc">|&gt;</span> </span>
 <span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="1440"></p>
 </div>
 </div>
 <p>It would also be useful to calculate the area under the curve:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-30_4283778b2fb94a2c404f3bae050b03a0">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>logistic_predictions <span class="ot">&lt;-</span> logistic_fit <span class="sc">|&gt;</span> </span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_predictions</span>()</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">roc_auc</span>(logistic_predictions, <span class="at">truth =</span> canceled_plan, <span class="at">estimate=</span>.pred_yes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-stdout">
 <pre><code># A tibble: 1 × 3
   .metric .estimator .estimate
@@ -401,7 +446,10 @@ Computational engine: glm </code></pre>
 </div>
 <p>Similarly the confusion matrix can be calculated:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-32_5f106dacad62f3d4e9fcebfe5fa9208e">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">conf_mat</span>(logistic_predictions, <span class="at">truth =</span> canceled_plan, <span class="at">estimate =</span> .pred_class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-stdout">
 <pre><code>          Truth
 Prediction yes  no
@@ -415,18 +463,26 @@ Prediction yes  no
 <p>In this section a different model will be fit, a linear discriminant analysis (LDA) model. LDA is a classification algorithm based on the assumption that the predictor variables are following a multivariate normal distribution and have a common covariance matrix.</p>
 <p>We already have the respective splits, all that left is to specify the LDA model and workflow:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-34_7f6d7f85dafbef85b450fd3b7d20698d">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>lda_mod <span class="ot">&lt;-</span> <span class="fu">discrim_regularized</span>(<span class="at">frac_common_cov =</span> <span class="dv">1</span>) <span class="sc">|&gt;</span> <span class="co"># frac_common_cov=1 instructs the model that the main assupmption is true, i.e. that each class in the response variable has the same variance.</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">'klaR'</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">'classification'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>Create the workflow:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-36_6b5830870c057878c7de0fcb9c2e24c1">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>lda_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span> </span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(lda_mod) <span class="sc">|&gt;</span> </span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(canceled_recipe)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>Fit the model to the folds:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-38_7b942738a51885a1b5648017d9352f9e">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>lda_cv_results <span class="ot">&lt;-</span> <span class="fu">fit_resamples</span>(</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  lda_wf,</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  canceled_folds,</span>
@@ -439,6 +495,7 @@ Prediction yes  no
 <span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Collect the specified metrics:</span></span>
 <span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>lda_cv_results <span class="sc">|&gt;</span> </span>
 <span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_metrics</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-stdout">
 <pre><code># A tibble: 8 × 6
   .metric   .estimator  mean     n std_err .config             
@@ -455,11 +512,14 @@ Prediction yes  no
 </div>
 <p>The final fit:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-40_87a9bb37f8e6097e1f0fb61d8047892a">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>lda_fit <span class="ot">&lt;-</span> lda_wf <span class="sc">|&gt;</span> </span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">last_fit</span>(canceled_split)</span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>lda_fit <span class="sc">|&gt;</span> </span>
 <span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_metrics</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-stdout">
 <pre><code># A tibble: 2 × 4
   .metric  .estimator .estimate .config             
@@ -470,18 +530,24 @@ Prediction yes  no
 </div>
 <p>ROC curve and confusion matrix for the LDA model:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-42_25e3a273098dce162113e66346809a74">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ROC Curve</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>lda_fit <span class="sc">|&gt;</span> </span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_predictions</span>() <span class="sc">|&gt;</span> </span>
 <span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">roc_curve</span>(canceled_plan,.pred_yes) <span class="sc">|&gt;</span> </span>
 <span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-42-1.png" class="img-fluid" width="1440"></p>
 </div>
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># confusion marix</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>lda_fit <span class="sc">|&gt;</span> </span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_predictions</span>() <span class="sc">|&gt;</span> </span>
 <span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">conf_mat</span>(canceled_plan,.pred_class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-stdout">
 <pre><code>          Truth
 Prediction yes  no
@@ -494,33 +560,48 @@ Prediction yes  no
 <h2 class="anchored" data-anchor-id="knn-classification">KNN Classification</h2>
 <p>The process is the same as in the previous examples except that this time the model is based on the k-nearest neighbor algorithm, and the model will be tuned using cross validation:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-44_2c2c489c4c0371a3ddb2d2a44990526c">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>knn_mod <span class="ot">&lt;-</span> <span class="fu">nearest_neighbor</span>(<span class="at">neighbors =</span> <span class="fu">tune</span>()) <span class="sc">|&gt;</span> </span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"kknn"</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>setting up the workflow:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-46_22809fc2ee4d924fd924f19f8f630867">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>knn_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span> </span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(knn_mod) <span class="sc">|&gt;</span> </span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(canceled_recipe)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <section id="hyperparameter-tuning" class="level3">
 <h3 class="anchored" data-anchor-id="hyperparameter-tuning">Hyperparameter Tuning</h3>
 <p>Since we the parameter being tuned is the neighbor value, a tuning grid needs to be created:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-48_51fc892eaa630e59f17739bf05cdca6d">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>k_grid <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">neighbors =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">25</span>, <span class="dv">45</span>, <span class="dv">60</span>, <span class="dv">80</span>, <span class="dv">100</span>, <span class="dv">120</span>, <span class="dv">140</span>,<span class="dv">180</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>Now that the grid is specified, the grid search can be specified:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-50_3acecce1700fcf5b6a42f61cc0af0c74">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>knn_tunning <span class="ot">&lt;-</span> knn_wf <span class="sc">|&gt;</span> </span>
 <span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tune_grid</span>(<span class="at">resamples=</span>canceled_folds,</span>
 <span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">grid=</span>k_grid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>The metrics for each neighbor parameter can be accessed using collect_metrics():</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-52_047606870736b38aefab65092b49e72e">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb37"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>knn_tunning <span class="sc">|&gt;</span> <span class="fu">collect_metrics</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-stdout">
 <pre><code># A tibble: 20 × 7
    neighbors .metric  .estimator  mean     n std_err .config              
@@ -549,9 +630,12 @@ Prediction yes  no
 </div>
 <p>However, we are interested in selecting the best model:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-54_af5b21cf8bf8963db119a14b13c916a0">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>knn_best <span class="ot">&lt;-</span> knn_tunning <span class="sc">|&gt;</span> </span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select_best</span>(<span class="at">metric =</span> <span class="st">'roc_auc'</span>)</span>
 <span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>knn_best</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-stdout">
 <pre><code># A tibble: 1 × 2
   neighbors .config              
@@ -561,8 +645,11 @@ Prediction yes  no
 </div>
 <p>It seems that the best model is one with 180 neighbors, it might be interesting to see the variations in performance as the neighbors parameter as tuned:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-56_3ae4a811c39110e23e881dfd3d424cad">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>knn_tunning <span class="sc">|&gt;</span> </span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-56-1.png" class="img-fluid" width="1440"></p>
 </div>
@@ -573,21 +660,30 @@ Prediction yes  no
 <h2 class="anchored" data-anchor-id="finalising-the-workflow">Finalising the workflow:</h2>
 <p>The final step is to update the model with the best performing parameter:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-58_56bc88a6a81ff6e5f25b07eb1c61fb29">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb42"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>knn_final_wf <span class="ot">&lt;-</span> knn_wf <span class="sc">|&gt;</span> </span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_workflow</span>(knn_best)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>Next we fit the model to the entire training data and evaluate it on the test data:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-60_3ac8ae086f413596dd495d86e188547d">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb43"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>final_knn_fit <span class="ot">&lt;-</span> knn_final_wf <span class="sc">|&gt;</span> </span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">last_fit</span>(<span class="at">split=</span>canceled_split)</span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="co"># create a df of the results:</span></span>
 <span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>final_knn_fit <span class="sc">|&gt;</span> </span>
 <span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_predictions</span>() <span class="ot">-&gt;</span> results_knn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>Get some metrics data:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-62_54c688e8e836ecb7f57b55b1ab0a83d5">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb44"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>final_knn_fit <span class="sc">|&gt;</span> </span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_metrics</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-stdout">
 <pre><code># A tibble: 2 × 4
   .metric  .estimator .estimate .config             
@@ -598,16 +694,22 @@ Prediction yes  no
 </div>
 <p>It seems the hyperparameterised knn model performs better than the previous 2 models if only slightly, lets take a look at at the ROC curve and a confusion matrix:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-64_82c8db6d68543beeee89bbea498d1e0a">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb46"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ROC Curve</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>results_knn <span class="sc">|&gt;</span> </span>
 <span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">roc_curve</span>(canceled_plan,.pred_yes) <span class="sc">|&gt;</span> </span>
 <span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-64-1.png" class="img-fluid" width="1440"></p>
 </div>
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb47"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Confusion matrix:</span></span>
 <span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">conf_mat</span>(results_knn, <span class="at">truth =</span> canceled_plan,</span>
 <span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">estimate =</span> .pred_class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-stdout">
 <pre><code>          Truth
 Prediction yes  no
@@ -617,6 +719,8 @@ Prediction yes  no
 </div>
 <p>Finally We can visualise the models together:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-66_4f50d79163faf5c9df56eb28095ea9f9">
+<details>
+<summary>Show the code</summary>
 <div class="sourceCode" id="cb49"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>logistic_auc <span class="ot">&lt;-</span> </span>
 <span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  logistic_fit <span class="sc">|&gt;</span> </span>
 <span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_predictions</span>() <span class="sc">|&gt;</span> </span>
@@ -640,6 +744,7 @@ Prediction yes  no
 <span id="cb49-21"><a href="#cb49-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">lty =</span> <span class="dv">3</span>) <span class="sc">+</span> </span>
 <span id="cb49-22"><a href="#cb49-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span> </span>
 <span id="cb49-23"><a href="#cb49-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis_d</span>(<span class="at">option =</span> <span class="st">"plasma"</span>, <span class="at">end =</span> .<span class="dv">6</span>)<span class="sc">+</span><span class="fu">theme_light</span>()<span class="sc">+</span><span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-66-1.png" class="img-fluid" width="1440"></p>
 </div>
