@@ -1,0 +1,417 @@
+---
+title: "Predicting Consumer Mobile Plan Cancellation"
+format:
+ html:
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    theme:
+     dark: darkly
+     light: flatly
+---
+
+# Data Overview
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(cache = TRUE, cache.lazy = FALSE, warning = FALSE,
+                      message = FALSE, echo =TRUE, dpi =180, 
+                      fig.width = 8, fig.height = 5)
+pacman::p_load(tidyverse,tidymodels,discrim, tidyselect)
+ theme_set(theme_light(base_size = 12))
+
+# Telecommunications customer churn data
+mobile_carrier_data <- readRDS("~/Documents/R/George_Mason_University_Data_Mining/mobile_carrier_data.rds")
+```
+
+The data in question is concerned with consumer behaviour around their mobile plan, we are particularly interested in being able to predict mobile plan cancellation. Lets get a quick overview of the data:
+
+```{r}
+glimpse(mobile_carrier_data) 
+# skimr::skim(mobile_carrier_data)
+```
+
+# Exploratory Data Analysis
+
+It would be interesting to see how the total day calls variable is distributed and whether this differs by region:
+
+```{r, message=FALSE, warning=FALSE}
+library(ggridges)
+mobile_carrier_data |> 
+  ggplot(aes(total_day_calls, us_state_region,
+             fill=us_state_region))+
+  geom_density_ridges()+
+   labs(y="",
+       x="Calls/day",
+       title = "Distribution of total calls/day by US state region",
+       )+
+  scale_fill_brewer(palette = "Spectral")+
+  theme_ridges()+
+  guides(fill=FALSE)
+```
+
+Multicollinearity can be explored by creating a correlation matrix between the numeric variables:
+
+```{r, message=FALSE}
+corm <- 
+  mobile_carrier_data |> 
+  select_if(is.numeric) |> 
+  corrr::correlate(diagonal = 1) |> 
+  corrr::shave(upper = FALSE)
+
+corm |> 
+  pivot_longer(
+    cols = -term,
+    names_to = "colname",
+    values_to = "corr"
+  ) |> 
+ mutate(
+    rowname = fct_inorder(term),
+    colname = fct_inorder(colname),
+    label = ifelse(is.na(corr), "", sprintf("%1.2f", corr))
+  ) ->corm
+# Create the plot:
+
+corm |> 
+  ggplot(aes(rowname, fct_rev(colname),
+             fill=corr))+
+    geom_tile() +
+  geom_text(aes(
+    label = label,
+    color = abs(corr) < .75
+  )) +
+  coord_fixed(expand = FALSE) +
+  scale_color_manual(
+    values = c("white", "black"),
+    guide = "none"
+  ) +
+  scale_fill_distiller(
+    palette = "PuOr", na.value = "white",
+    direction = 1, limits = c(-1, 1),
+    name = "Pearson\nCorrelation:"
+  ) +
+  labs(x = NULL, y = NULL) +
+  theme(panel.border = element_rect(color = NA, fill = NA),
+        legend.position = c(.85, .8),
+        axis.text.x = element_text(angle = 45,
+                                   vjust=1,
+                                   hjust=1))
+```
+
+Doesn't seem like there are any potential multicolinearity issues with the numeric variables, in fact the variables with the highest correlation are total_day_minutes and customer_service_calls with a very low -0.08 correlation.
+
+# Model Building
+
+This data contains information on whether a member cancelled their service. Lets quickly take a look at the proportion of the cancellations:
+
+```{r}
+mobile_carrier_data |> 
+  select(canceled_plan) |> 
+  group_by(canceled_plan) |> 
+  tally() |> 
+  mutate(perc=round((n/sum(n)*100),2))
+```
+
+A total of 31.03% members in our dataset have canceled their plan, inversely 68.95% did not cancel. The goal will be to predict canceled_plan with several machine learning algorithms: logistic regression, LDA, KNN, and random forest.
+
+## Logistic regression
+
+First step prior to any modeling will be to create the training and testing splits:
+
+```{r}
+set.seed(123)
+
+canceled_split <- initial_split(mobile_carrier_data,
+                                prop = 0.75,
+                                strata = canceled_plan)
+
+canceled_training <- canceled_split |> 
+training()
+
+canceled_testing <- canceled_split |> 
+  testing()
+
+# Crossvalidation folds for tuning:
+set.seed(123)
+
+canceled_folds <- vfold_cv(canceled_training)
+```
+
+### Feature engineering:
+
+The following transformations to the data are undertaken. First the skewness from the numeric predictors is removed with `step_YeoJohnson()`
+
+```{r}
+canceled_recipe <- 
+  recipe(canceled_plan~., data=mobile_carrier_data) |> 
+  step_YeoJohnson(all_numeric(), -all_outcomes()) |> 
+  step_normalize(all_numeric(), -all_outcomes()) |> 
+  step_dummy(all_nominal(), -all_outcomes())
+```
+
+The transformation of the data can be checked, by prepping and baking the data:
+
+```{r}
+canceled_recipe |> 
+  prep() |> 
+  bake(new_data=NULL)
+```
+
+It seems the data has been transformed as desired.
+
+## Specifying the Logistic Regression Model
+
+The logistic regression model is specified below:
+
+```{r}
+logistic_model <- logistic_reg() |> 
+  set_engine("glm") |> 
+  set_mode("classification")
+```
+
+## Creating the workflow
+
+Next we put our recipe and model specification together to create a workflow:
+
+```{r}
+logistic_wf <- workflow() |> 
+  add_model(logistic_model) |> 
+  add_recipe(canceled_recipe) 
+```
+
+The workflow can be inspected by calling it:
+
+```{r}
+logistic_wf
+```
+
+Lets fit the model to the cross validation folds:
+
+```{r}
+logistic_cv_results <- fit_resamples(
+  logistic_wf,
+  canceled_folds,
+  metrics = metric_set(
+      recall, precision, f_meas, 
+      accuracy, kap,
+      roc_auc, sens, spec),
+  control = control_resamples(save_pred = TRUE)
+)
+# Collect the specified metrics:
+logistic_cv_results |> 
+  collect_metrics()
+```
+
+Finally we can fit the model to our training and the test the model using `last_fit()`:
+
+```{r}
+logistic_fit <- logistic_wf |> 
+  last_fit(canceled_split)
+```
+
+Next we can create an ROC curve by collecting the predictions from our last fit:
+
+```{r}
+logistic_fit |> 
+  collect_predictions() |> 
+  roc_curve(canceled_plan,.pred_yes) |> 
+  autoplot()
+```
+
+It would also be useful to calculate the area under the curve:
+
+```{r}
+logistic_predictions <- logistic_fit |> 
+  collect_predictions()
+
+roc_auc(logistic_predictions, truth = canceled_plan, estimate=.pred_yes)
+```
+
+Similarly the confusion matrix can be calculated:
+
+```{r}
+conf_mat(logistic_predictions, truth = canceled_plan, estimate = .pred_class)
+```
+
+## Linear Discriminant Analysis
+
+In this section a different model will be fit, a linear discriminant analysis (LDA) model. LDA is a classification algorithm based on the assumption that the predictor variables are following a multivariate normal distribution and have a common covariance matrix.
+
+We already have the respective splits, all that left is to specify the LDA model and workflow:
+
+```{r}
+lda_mod <- discrim_regularized(frac_common_cov = 1) |> # frac_common_cov=1 instructs the model that the main assupmption is true, i.e. that each class in the response variable has the same variance.
+  set_engine('klaR') |> 
+  set_mode('classification')
+```
+
+Create the workflow:
+
+```{r}
+lda_wf <- workflow() |> 
+  add_model(lda_mod) |> 
+  add_recipe(canceled_recipe)
+```
+
+Fit the model to the folds:
+
+```{r}
+lda_cv_results <- fit_resamples(
+  lda_wf,
+  canceled_folds,
+  metrics = metric_set(
+      recall, precision, f_meas, 
+      accuracy, kap,
+      roc_auc, sens, spec),
+  control = control_resamples(save_pred = TRUE)
+)
+# Collect the specified metrics:
+lda_cv_results |> 
+  collect_metrics()
+```
+
+The final fit:
+
+```{r}
+lda_fit <- lda_wf |> 
+  last_fit(canceled_split)
+
+lda_fit |> 
+  collect_metrics()
+```
+
+ROC curve and confusion matrix for the LDA model:
+
+```{r}
+# ROC Curve
+lda_fit |> 
+  collect_predictions() |> 
+  roc_curve(canceled_plan,.pred_yes) |> 
+  autoplot()
+# confusion marix
+lda_fit |> 
+  collect_predictions() |> 
+conf_mat(canceled_plan,.pred_class)
+```
+
+## KNN Classification
+
+The process is the same as in the previous examples except that this time the model is based on the k-nearest neighbor algorithm, and the model will be tuned using cross validation:
+
+```{r}
+knn_mod <- nearest_neighbor(neighbors = tune()) |> 
+  set_engine("kknn") |> 
+  set_mode("classification")
+```
+
+setting up the workflow:
+
+```{r}
+knn_wf <- workflow() |> 
+  add_model(knn_mod) |> 
+  add_recipe(canceled_recipe)
+```
+
+### Hyperparameter Tuning
+
+Since we the parameter being tuned is the neighbor value, a tuning grid needs to be created:
+
+```{r}
+k_grid <- tibble(neighbors = c(10, 15, 25, 45, 60, 80, 100, 120, 140,180))
+```
+
+Now that the grid is specified, the grid search can be specified:
+
+```{r}
+set.seed(123)
+
+knn_tunning <- knn_wf |> 
+  tune_grid(resamples=canceled_folds,
+            grid=k_grid)
+```
+
+The metrics for each neighbor parameter can be accessed using collect_metrics():
+
+```{r}
+knn_tunning |> collect_metrics()
+```
+
+However, we are interested in selecting the best model:
+
+```{r}
+knn_best <- knn_tunning |> 
+  select_best(metric = 'roc_auc')
+knn_best
+```
+
+It seems that the best model is one with 180 neighbors, it might be interesting to see the variations in performance as the neighbors parameter as tuned:
+
+```{r}
+knn_tunning |> 
+autoplot()
+```
+
+## Finalising the workflow:
+
+The final step is to update the model with the best performing parameter:
+
+```{r}
+knn_final_wf <- knn_wf |> 
+  finalize_workflow(knn_best)
+```
+
+Next we fit the model to the entire training data and evaluate it on the test data:
+
+```{r}
+final_knn_fit <- knn_final_wf |> 
+  last_fit(split=canceled_split)
+# create a df of the results:
+final_knn_fit |> 
+  collect_predictions() -> results_knn
+```
+
+Get some metrics data:
+
+```{r}
+final_knn_fit |> 
+  collect_metrics()
+```
+
+It seems the hyperparameterised knn model performs better than the previous 2 models if only slightly, lets take a look at at the ROC curve and a confusion matrix:
+
+```{r}
+# ROC Curve
+results_knn |> 
+  roc_curve(canceled_plan,.pred_yes) |> 
+  autoplot()
+# Confusion matrix:
+conf_mat(results_knn, truth = canceled_plan,
+         estimate = .pred_class)
+```
+
+Finally We can visualise the models together:
+
+```{r}
+logistic_auc <- 
+  logistic_fit |> 
+  collect_predictions() |> 
+  roc_curve(canceled_plan,.pred_yes) |> 
+  mutate(model='Logistic')
+
+lda_auc <- 
+  lda_fit |> 
+  collect_predictions() |> 
+  roc_curve(canceled_plan,.pred_yes) |> 
+  mutate(model='LDA')
+
+knn_auc <- 
+  results_knn |> 
+  roc_curve(canceled_plan,.pred_yes) |> 
+  mutate(model='KNN')
+
+bind_rows(logistic_auc,lda_auc,knn_auc) |> 
+  ggplot(aes(x = 1 - specificity, y = sensitivity, col = model)) + 
+  geom_path(lwd = 1.5, alpha = 0.8) +
+  geom_abline(lty = 3) + 
+  coord_equal() + 
+  scale_color_viridis_d(option = "plasma", end = .6)+theme_light()+theme(legend.position = "top")
+```
