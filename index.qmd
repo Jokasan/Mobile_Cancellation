@@ -23,7 +23,7 @@ pacman::p_load(tidyverse,tidymodels,discrim, tidyselect)
 mobile_carrier_data <- readRDS("~/Documents/R/George_Mason_University_Data_Mining/mobile_carrier_data.rds")
 ```
 
-The data in question is concerned with consumer behaviour around their mobile plan, we are particularly interested in being able to predict mobile plan cancellation. Lets get a quick overview of the data:
+The data in question is concerned with consumer behaviour around their mobile plan in the US, we are particularly interested in being able to predict mobile plan cancellation. Lets get a quick overview of the data:
 
 ```{r}
 glimpse(mobile_carrier_data) 
@@ -42,7 +42,7 @@ mobile_carrier_data |>
   geom_density_ridges()+
    labs(y="",
        x="Calls/day",
-       title = "Distribution of total calls/day by US state region",
+       title = "Distribution of total calls/day by region",
        )+
   scale_fill_brewer(palette = "Spectral")+
   theme_ridges()+
@@ -91,7 +91,7 @@ corm |>
   ) +
   labs(x = NULL, y = NULL) +
   theme(panel.border = element_rect(color = NA, fill = NA),
-        legend.position = c(.85, .8),
+        legend.position = c(.85, .72),
         axis.text.x = element_text(angle = 45,
                                    vjust=1,
                                    hjust=1))

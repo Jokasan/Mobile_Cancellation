@@ -130,7 +130,7 @@
 <div class="cell">
 
 </div>
-<p>The data in question is concerned with consumer behaviour around their mobile plan, we are particularly interested in being able to predict mobile plan cancellation. Lets get a quick overview of the data:</p>
+<p>The data in question is concerned with consumer behaviour around their mobile plan in the US, we are particularly interested in being able to predict mobile plan cancellation. Lets get a quick overview of the data:</p>
 <div class="cell" data-hash="index_cache/html/unnamed-chunk-4_85e4b9786faa992056358d12c740151a">
 <details>
 <summary>Show the code</summary>
@@ -163,7 +163,7 @@ $ number_customer_service_calls &lt;int&gt; 3, 1, 2, 0, 0, 0, 0, 6, 2, 2, 2, 4, 
 <section id="exploratory-data-analysis" class="level1">
 <h1>Exploratory Data Analysis</h1>
 <p>It would be interesting to see how the total day calls variable is distributed and whether this differs by region:</p>
-<div class="cell" data-hash="index_cache/html/unnamed-chunk-6_8477da23315b4051b7d000264c947fe0">
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-6_3ad995190abfba40dd07fce042506115">
 <details>
 <summary>Show the code</summary>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggridges)</span>
@@ -173,7 +173,7 @@ $ number_customer_service_calls &lt;int&gt; 3, 1, 2, 0, 0, 0, 0, 6, 2, 2, 2, 4, 
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density_ridges</span>()<span class="sc">+</span></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>   <span class="fu">labs</span>(<span class="at">y=</span><span class="st">""</span>,</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">x=</span><span class="st">"Calls/day"</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Distribution of total calls/day by US state region"</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Distribution of total calls/day by region"</span>,</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>       )<span class="sc">+</span></span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Spectral"</span>)<span class="sc">+</span></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_ridges</span>()<span class="sc">+</span></span>
@@ -184,7 +184,7 @@ $ number_customer_service_calls &lt;int&gt; 3, 1, 2, 0, 0, 0, 0, 6, 2, 2, 2, 4, 
 </div>
 </div>
 <p>Multicollinearity can be explored by creating a correlation matrix between the numeric variables:</p>
-<div class="cell" data-hash="index_cache/html/unnamed-chunk-8_2aba5a0a9d99412bf2e18eab1309a960">
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-8_fe1a928d66175e40b1a6cb0ce407a760">
 <details>
 <summary>Show the code</summary>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r cell-code code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>corm <span class="ot">&lt;-</span> </span>
@@ -226,7 +226,7 @@ $ number_customer_service_calls &lt;int&gt; 3, 1, 2, 0, 0, 0, 0, 6, 2, 2, 2, 4, 
 <span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
 <span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">color =</span> <span class="cn">NA</span>, <span class="at">fill =</span> <span class="cn">NA</span>),</span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(.<span class="dv">85</span>, .<span class="dv">8</span>),</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(.<span class="dv">85</span>, .<span class="dv">72</span>),</span>
 <span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>,</span>
 <span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">vjust=</span><span class="dv">1</span>,</span>
 <span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">hjust=</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
